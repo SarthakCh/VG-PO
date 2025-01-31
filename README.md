@@ -4,5 +4,9 @@ This repository contains the code of the decomposition pipeline algorithm. Indus
 
 The main blocks of this algorithm as located in the folder "dcmppln". We test some of these components in the folder "tests". We include a simple notebook that shows how to run this decomposition pipeline in the folder "examples". Note that we include some data to perform these executions in tests/data. 
 
-SPDX-License-Identifier: Apache-2.0
-@ Copyright 2024: Amazon Web Services, Inc. - Contributions from JPMC# VG-PO
+Working specifically on the Decompostion pipeline's estimator optimization. 
+
+To observe this changes follow on to dcmppln>correlation_rmt_Copy1/correlation_rmt, here shrinkage estimator is being tried--->correlation_rmt_Copy1.
+
+for Data tranfusion refer to dcmppln>tests>data, to understand the data arc and details.
+
