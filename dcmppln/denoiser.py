@@ -5,11 +5,15 @@
 ###############################################################################
 import numpy as np
 from dcmppln.utils.utils import get_instance_non_private_attributes
-from dcmppln.utils import correlation_rmt, correlation_rmt_Copy1
+from dcmppln.utils import correlation_rmt, correlation_rmt_Copy1, correlation_rmt_Copy2, correlation_rmt_Copy3, correlation_rmt_Copy4
 from dcmppln.utils.utils import timeit
 from abc import ABC, abstractmethod
 
 class Denoiser_Base(ABC):
+    # use this structure to ease profile readability
+    def __call__(self, C):
+        return self.denoise(C)
+
     @abstractmethod
     def denoise(self, C : np.array)->np.array :
         pass
@@ -33,10 +37,6 @@ class Denoiser(Denoiser_Base):
         self.q_fit = q_fit
 
         self.params = get_instance_non_private_attributes(self)
-
-    # use this structure to ease profile readability
-    def __call__(self, C):
-        return self.denoise(C)
 
     # Check with q=0.5, q_fit = False,  q=1.5
     @timeit
@@ -95,4 +95,30 @@ class Denoiser_Shrinkage(Denoiser_Base):
             return C
 
         C_1, C_2, C_3 = correlation_rmt_Copy1.split_covariance_matrices(C, gamma=self.gamma)
+        return C_2
+
+class Denoiser_Bayesian_PCA(Denoiser_Base):
+    def __init__(self, active: bool=True, n_components: int=None):
+        self.active = active
+        self.n_components = n_components
+        self.params = get_instance_non_private_attributes(self)
+    @timeit
+    def denoise(self, C: np.array) -> np.array:
+        if not self.active:
+            return C
+
+        C_1, C_2, C_3 = correlation_rmt_Copy2.split_covariance_matrices(C, n_components=self.n_components)
+        return C_2
+
+class Denoiser_PTSCDS(Denoiser_Base):
+    def __init__(self, active: bool=True, lambda_robust: float=None):
+        self.active = active
+        self.lambda_robust = lambda_robust
+        self.params = get_instance_non_private_attributes(self)
+    @timeit
+    def denoise(self, C: np.array) -> np.array:
+        if not self.active:
+            return C
+
+        C_1, C_2, C_3 = correlation_rmt_Copy3.split_covariance_matrices(C, lambda_robust=self.lambda_robust)
         return C_2
