@@ -131,10 +131,10 @@ def improved_preprocessing(data, gamma=0.1):
 
 
 
-
-# Example usage
-data = np.random.randn(100, 50)  # Example data (100 samples, 50 features)
-gamma = 0.1
-cleaned_cov_matrix = improved_preprocessing(data, gamma=gamma)
-print("Cleaned Covariance Matrix:")
-print(cleaned_cov_matrix)
+if __name__=="__main__":
+    # Example usage
+    data = np.random.randn(100, 50)  # Example data (100 samples, 50 features)
+    gamma = 0.1
+    cleaned_cov_matrix = improved_preprocessing(data, gamma=gamma)
+    print("Cleaned Covariance Matrix:")
+    print(cleaned_cov_matrix)
