@@ -5,7 +5,7 @@ from collections import namedtuple
 
 PortfolioData = namedtuple('StockData', ['returns', 'mean_returns', 'covariances', 'correlations', 'log_returns'])
 
-def calculate_returns_correlations(data : pd.DataFrame, log_returns=False):
+def calculate_returns_correlations(data : pd.DataFrame, log_returns=True):
     """ Given a dataframe of asset tickers and values over a period of time, computes the returns and correlations usable for the PO module.
 
     Parameters
