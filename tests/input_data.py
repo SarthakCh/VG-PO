@@ -15,7 +15,7 @@ class InputData:
     Component to input data into the pipeline
     """
 
-    def __init__(self, path="", abs_cov=True, abs_corr=True, subprob_idx=None, min_stocks=None):
+    def __init__(self, path="", abs_cov=True, abs_corr=True, subprob_idx=None, path_name = 'russell3000', min_stocks=None):
         default_paths = ["../tests/data/", "tests/data/"]
 
         # Use the provided path or the first existing default path
@@ -26,7 +26,7 @@ class InputData:
             for default_path in default_paths:
                 if self._path_exists(default_path):
                     self.path = default_path
-                    self.path=self.path+"russell3000" #changing point
+                    self.path=self.path+path_name #changing point
                     break
             if not self.path:
                 raise FileNotFoundError("None of the default paths exist.")
@@ -36,7 +36,7 @@ class InputData:
         self.params = get_instance_non_private_attributes(self)
 
          # Ensure at least min_stocks are selected
-        if subprob_idx is not None and len(subprob_idx) < min_stocks: # This only works because subprob_idx is None so it never checks if min_stocks is defined
+        if subprob_idx is not None and len(subprob_idx) < min_stocks:
             raise ValueError(f"subprob_idx must select at least {min_stocks} stocks.")
         self._subprob_idx = subprob_idx
 
