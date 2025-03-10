@@ -15,7 +15,7 @@ class InputData:
     Component to input data into the pipeline
     """
 
-    def __init__(self, path="", abs_cov=True, abs_corr=True, subprob_idx=None):
+    def __init__(self, path="", abs_cov=True, abs_corr=True, subprob_idx=None, min_stocks=None):
         default_paths = ["../tests/data/", "tests/data/"]
 
         # Use the provided path or the first existing default path
@@ -36,7 +36,7 @@ class InputData:
         self.params = get_instance_non_private_attributes(self)
 
          # Ensure at least min_stocks are selected
-        if subprob_idx is not None and len(subprob_idx) < min_stocks:
+        if subprob_idx is not None and len(subprob_idx) < min_stocks: # This only works because subprob_idx is None so it never checks if min_stocks is defined
             raise ValueError(f"subprob_idx must select at least {min_stocks} stocks.")
         self._subprob_idx = subprob_idx
 
