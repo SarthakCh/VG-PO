@@ -60,7 +60,7 @@ def bayesian_pca(data: np.ndarray, n_components: int, max_iter: int = 100, tol: 
     
     return W, sigma2, Z.T
 
-def split_covariance_bayesian(C: np.ndarray, data: np.ndarray, n_components: int = None) -> tuple:
+def split_covariance_matrices(C: np.ndarray, data: np.ndarray, n_components: int = None) -> tuple:
     """
     Split the covariance matrix into C_Noise, C_Star, and C_Global using Bayesian PCA.
 
@@ -130,7 +130,7 @@ def improved_preprocessing(data: np.ndarray, n_components: int = None) -> tuple:
     raw_cov_matrix = np.cov(data.T, bias=True)
 
     # Split the covariance matrix using Bayesian PCA
-    C_Noise, C_Star, C_Global = split_covariance_bayesian(raw_cov_matrix, data, n_components)
+    C_Noise, C_Star, C_Global = split_covariance_matrices(raw_cov_matrix, data, n_components)
 
     return C_Noise, C_Star, C_Global
 
