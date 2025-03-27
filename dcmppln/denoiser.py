@@ -94,35 +94,40 @@ class Denoiser_Shrinkage(Denoiser_Base):
         return C_2
 
 class Denoiser_Bayesian_PCA(Denoiser_Base):
-    def __init__(self, active: bool=True, n_components: int=None, data=None):
+    def __init__(self, raw_returns, active: bool=True, n_components: int=None):
         self.active = active
         self.n_components = n_components
-        self.data = data
+        self.data = raw_returns
         self.params = get_instance_non_private_attributes(self)
     @timeit
     def denoise(self, C: np.array) -> np.array:
         if not self.active:
             return C
 
-        C_1, C_2, C_3 = correlation_bayesian_PCA.split_covariance_matrices(C, data=self.data, n_components=self.n_components)
+        C_1, C_2, C_3 = correlation_bayesian_PCA.split_covariance_matrices(C, data=self.raw_returns, n_components=self.n_components)
         return C_2
 
 class Denoiser_PTSCDS(Denoiser_Base):
-    def __init__(self, active: bool=True, lambda_robust: float=None):
+    def __init__(self, raw_returns, active: bool=True):
         self.active = active
-        self.lambda_robust = lambda_robust
+        # Compute the shrunk covariance matrix from the data
+        self.C_shrunk = correlation_pts.LedoitWolf().fit(raw_returns).covariance_
+        # Compute the dynamic noise threshold
+        self.lambda_robust = correlation_pts.permutation_test_threshold(raw_returns)
+        # Compute the dynamic noise threshold
         self.params = get_instance_non_private_attributes(self)
     @timeit
     def denoise(self, C: np.array) -> np.array:
         if not self.active:
             return C
 
-        C_1, C_2, C_3 = correlation_pts.split_covariance_matrices(C, lambda_robust=self.lambda_robust)
+        C_1, C_2, C_3 = correlation_pts.split_covariance_matrices(C_shrunk=self.C_shrunk, lambda_robust=self.lambda_robust)
         return C_2
 
 class Denoiser_Bootstrap(Denoiser_Base):
-    def __init__(self, active: bool=True, lambda_robust: float=None):
+    def __init__(self, raw_returns, active: bool=True, lambda_robust: float=None):
         self.active = active
+        self.C_shrunk = correlation_bootstrap.LedoitWolf().fit(raw_returns).covariance_
         self.lambda_robust = lambda_robust
         self.params = get_instance_non_private_attributes(self)
     @timeit
@@ -130,5 +135,5 @@ class Denoiser_Bootstrap(Denoiser_Base):
         if not self.active:
             return C
 
-        C_1, C_2, C_3 = correlation_bootstrap.split_covariance_matrices(C, lambda_robust=self.lambda_robust)
+        C_1, C_2, C_3 = correlation_bootstrap.split_covariance_matrices(C_shrunk=self.C_shrunk, lambda_robust=self.lambda_robust)
         return C_2
