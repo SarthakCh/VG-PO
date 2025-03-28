@@ -97,7 +97,7 @@ class Denoiser_Bayesian_PCA(Denoiser_Base):
     def __init__(self, raw_returns, active: bool=True, n_components: int=None):
         self.active = active
         self.n_components = n_components
-        self.data = raw_returns
+        self.raw_returns = raw_returns
         self.params = get_instance_non_private_attributes(self)
     @timeit
     def denoise(self, C: np.array) -> np.array:
@@ -128,7 +128,9 @@ class Denoiser_Bootstrap(Denoiser_Base):
     def __init__(self, raw_returns, active: bool=True, lambda_robust: float=None):
         self.active = active
         self.C_shrunk = correlation_bootstrap.LedoitWolf().fit(raw_returns).covariance_
-        self.lambda_robust = lambda_robust
+
+        # Compute the dynamic noise threshold
+        self.lambda_robust = correlation_bootstrap.bootstrap_threshold(self.C_shrunk)
         self.params = get_instance_non_private_attributes(self)
     @timeit
     def denoise(self, C: np.array) -> np.array:
